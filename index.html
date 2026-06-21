@@ -509,6 +509,66 @@
     padding: 40px 0;
     font-size: 14px;
   }
+  /* 日付別グループの履歴 */
+  .history-day-card {
+    background: #1e293b;
+    border: 1px solid #334155;
+    border-radius: 14px;
+    margin-bottom: 12px;
+    overflow: hidden;
+  }
+  .history-day-head {
+    padding: 14px 16px;
+    cursor: pointer;
+    -webkit-tap-highlight-color: rgba(255,255,255,0.04);
+  }
+  .history-day-row1 {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 6px;
+  }
+  .history-day-date {
+    font-size: 17px;
+    font-weight: 800;
+    color: #f1f5f9;
+  }
+  .history-day-arrow {
+    color: #38bdf8;
+    font-size: 18px;
+    transition: transform 0.2s;
+  }
+  .history-day-card.expanded .history-day-arrow {
+    transform: rotate(180deg);
+  }
+  .history-day-gyms {
+    color: #cbd5e1;
+    font-size: 13px;
+    margin-bottom: 6px;
+  }
+  .history-day-parts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-bottom: 6px;
+  }
+  .history-day-menus {
+    color: #94a3b8;
+    font-size: 13px;
+    line-height: 1.5;
+  }
+  .history-day-records {
+    display: none;
+    padding: 0 14px 14px;
+    border-top: 1px dashed #334155;
+  }
+  .history-day-card.expanded .history-day-records { display: block; }
+  .history-record {
+    padding: 12px 0;
+    border-bottom: 1px dashed #334155;
+  }
+  .history-record:last-child { border-bottom: none; }
+
   .history-item {
     background: #1e293b;
     border-radius: 14px;
@@ -723,6 +783,102 @@
   .save-btn-edit {
     background: #f59e0b !important;
     color: #1f2937 !important;
+  }
+
+  /* セット間タイマー */
+  .rest-timer {
+    position: fixed;
+    left: 16px;
+    right: 16px;
+    bottom: 16px;
+    max-width: 528px;
+    margin: 0 auto;
+    background: linear-gradient(180deg, #0c4a6e 0%, #075985 100%);
+    border: 2px solid #38bdf8;
+    border-radius: 14px;
+    padding: 14px 16px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    z-index: 80;
+    display: none;
+  }
+  .rest-timer.show { display: block; }
+  .rest-timer.alert {
+    background: linear-gradient(180deg, #14532d 0%, #166534 100%);
+    border-color: #22c55e;
+    animation: pulse-glow 0.8s ease infinite alternate;
+  }
+  @keyframes pulse-glow {
+    from { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.6); }
+    to   { box-shadow: 0 0 0 12px rgba(34, 197, 94, 0); }
+  }
+  .rest-timer-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+  .rest-timer-label {
+    color: #7dd3fc;
+    font-size: 12px;
+    font-weight: 700;
+  }
+  .rest-timer.alert .rest-timer-label { color: #86efac; }
+  .rest-timer-close {
+    background: transparent;
+    border: none;
+    color: #cbd5e1;
+    font-size: 20px;
+    cursor: pointer;
+    padding: 4px 8px;
+    line-height: 1;
+  }
+  .rest-timer-display {
+    text-align: center;
+    font-size: 38px;
+    font-weight: 900;
+    color: #f1f5f9;
+    letter-spacing: 2px;
+    font-variant-numeric: tabular-nums;
+    margin: 4px 0;
+  }
+  .rest-timer-buttons {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 8px;
+    margin-top: 10px;
+  }
+  .rest-timer-btn {
+    padding: 12px 0;
+    background: rgba(255,255,255,0.1);
+    color: #f1f5f9;
+    border: 1px solid rgba(255,255,255,0.25);
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    -webkit-appearance: none;
+  }
+  .rest-timer-btn.active {
+    background: #38bdf8;
+    color: #0f172a;
+    border-color: #38bdf8;
+  }
+  .rest-timer-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 8px;
+  }
+  .rest-timer-action {
+    flex: 1;
+    padding: 10px 0;
+    background: rgba(0,0,0,0.3);
+    color: #cbd5e1;
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    -webkit-appearance: none;
   }
   .today-summary .count {
     background: #10b981;
@@ -973,6 +1129,8 @@
       <div class="field">
         <label for="growthMetric">指標</label>
         <select id="growthMetric">
+          <option value="totalReps">合計回数(自重種目向け)</option>
+          <option value="avgReps">平均回数 / セット</option>
           <option value="avg">平均重量 (総ボリューム ÷ 総回数)</option>
           <option value="max">最大重量(その日の最大セット)</option>
           <option value="volume">総ボリューム (重量×回数の合計)</option>
@@ -996,6 +1154,24 @@
 </div>
 
 <div class="toast" id="toast">保存しました</div>
+
+<!-- セット間タイマー -->
+<div class="rest-timer" id="restTimer">
+  <div class="rest-timer-head">
+    <div class="rest-timer-label" id="restTimerLabel">⏱ セット間休憩</div>
+    <button class="rest-timer-close" id="restTimerClose" type="button" aria-label="閉じる">×</button>
+  </div>
+  <div class="rest-timer-display" id="restTimerDisplay">--:--</div>
+  <div class="rest-timer-buttons">
+    <button class="rest-timer-btn" data-duration="60" type="button">1分</button>
+    <button class="rest-timer-btn" data-duration="120" type="button">2分</button>
+    <button class="rest-timer-btn" data-duration="180" type="button">3分</button>
+  </div>
+  <div class="rest-timer-actions">
+    <button class="rest-timer-action" id="restTimerStop" type="button">停止</button>
+    <button class="rest-timer-action" id="restTimerReset" type="button">リセット</button>
+  </div>
+</div>
 
 <script>
   const STORAGE_KEY = 'workout_records_v1';
@@ -1072,6 +1248,14 @@
   ]);
   const isBigMuscle = (ex) => BIG_MUSCLE_EXERCISES.has(ex);
 
+  // 自重種目(重量は「追加ウェイト」として扱う。なければ0)
+  const BODYWEIGHT_EXERCISES = new Set([
+    'チンニング',
+    'ディップス',
+    '腹筋'
+  ]);
+  const isBodyweight = (ex) => BODYWEIGHT_EXERCISES.has(ex);
+
   // ---------- ユーティリティ ----------
   const $ = (id) => document.getElementById(id);
   const todayISO = () => {
@@ -1138,6 +1322,124 @@
   const saveCustomGyms = (gyms) => {
     localStorage.setItem(CUSTOM_GYMS_KEY, JSON.stringify(gyms));
   };
+
+  // ---------- セット間タイマー ----------
+  const Timer = (() => {
+    let intervalId = null;
+    let remaining = 0;        // 残り秒
+    let lastDuration = null;  // 直前に選んだ分数(秒) - 自動再開用
+    let alerted = false;
+
+    const $el = (id) => document.getElementById(id);
+    const display = () => $el('restTimerDisplay');
+    const widget = () => $el('restTimer');
+
+    const fmt = (sec) => {
+      const m = Math.floor(sec / 60);
+      const s = sec % 60;
+      return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+    };
+
+    const updateDisplay = () => {
+      display().textContent = fmt(Math.max(0, remaining));
+    };
+
+    const playAlert = () => {
+      // ブラウザのオーディオAPIでビープ音(短いトーン)
+      try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const playBeep = (delay) => {
+          setTimeout(() => {
+            const o = ctx.createOscillator();
+            const g = ctx.createGain();
+            o.frequency.value = 880;
+            o.connect(g); g.connect(ctx.destination);
+            g.gain.setValueAtTime(0.0001, ctx.currentTime);
+            g.gain.exponentialRampToValueAtTime(0.3, ctx.currentTime + 0.02);
+            g.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.35);
+            o.start();
+            o.stop(ctx.currentTime + 0.4);
+          }, delay);
+        };
+        playBeep(0); playBeep(450); playBeep(900);
+        // バイブレーションも(対応端末のみ)
+        if (navigator.vibrate) navigator.vibrate([200, 100, 200, 100, 200]);
+      } catch (e) {}
+    };
+
+    const tick = () => {
+      remaining -= 1;
+      updateDisplay();
+      if (remaining <= 0) {
+        clearInterval(intervalId);
+        intervalId = null;
+        if (!alerted) {
+          alerted = true;
+          widget().classList.add('alert');
+          $el('restTimerLabel').textContent = '✓ 休憩終了!次のセットへ';
+          playAlert();
+        }
+      }
+    };
+
+    const start = (durationSec) => {
+      stop();
+      lastDuration = durationSec;
+      remaining = durationSec;
+      alerted = false;
+      widget().classList.remove('alert');
+      widget().classList.add('show');
+      $el('restTimerLabel').textContent = '⏱ セット間休憩';
+      updateDisplay();
+      // ボタンのアクティブ表示
+      widget().querySelectorAll('.rest-timer-btn').forEach(b => {
+        b.classList.toggle('active', Number(b.dataset.duration) === durationSec);
+      });
+      intervalId = setInterval(tick, 1000);
+    };
+
+    const stop = () => {
+      if (intervalId) { clearInterval(intervalId); intervalId = null; }
+    };
+
+    const reset = () => {
+      stop();
+      remaining = 0;
+      alerted = false;
+      widget().classList.remove('alert');
+      $el('restTimerLabel').textContent = '⏱ セット間休憩';
+      display().textContent = '--:--';
+      widget().querySelectorAll('.rest-timer-btn').forEach(b => b.classList.remove('active'));
+    };
+
+    const hide = () => {
+      stop();
+      widget().classList.remove('show', 'alert');
+      widget().querySelectorAll('.rest-timer-btn').forEach(b => b.classList.remove('active'));
+      alerted = false;
+    };
+
+    // 次セットの回数入力で自動再開
+    const restart = () => {
+      if (lastDuration != null) start(lastDuration);
+    };
+
+    const getLastDuration = () => lastDuration;
+    const isRunning = () => intervalId !== null;
+    const isVisible = () => widget().classList.contains('show');
+
+    return { start, stop, reset, hide, restart, getLastDuration, isRunning, isVisible };
+  })();
+
+  // タイマーボタンイベント
+  document.querySelectorAll('#restTimer .rest-timer-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      Timer.start(Number(btn.dataset.duration));
+    });
+  });
+  document.getElementById('restTimerStop').addEventListener('click', () => Timer.stop());
+  document.getElementById('restTimerReset').addEventListener('click', () => Timer.reset());
+  document.getElementById('restTimerClose').addEventListener('click', () => Timer.hide());
 
   // 修正モード状態: 編集中の record.id を保持(新規登録時は null)
   let editingRecordId = null;
@@ -1302,36 +1604,61 @@
       return;
     }
 
+    // セット情報をきれいに整形(自重対応・回数明示)
+    const formatSetsLine = (r) => {
+      const bw = isBodyweight(r.exercise);
+      return r.sets.map(s => {
+        const w = s.weight;
+        const reps = s.reps;
+        let prefix;
+        if (bw) {
+          // 自重種目: 重量0なら「自重」、>0なら「自重+Nkg」
+          prefix = (w == null || w === 0) ? '自重' : `自重+${w}kg`;
+        } else {
+          prefix = (w != null) ? `${w}kg` : '?kg';
+        }
+        const repsPart = (reps != null) ? `× ${reps}回` : '';
+        return `${prefix} ${repsPart}`.trim();
+      }).join(' / ');
+    };
+
     let html = '';
     if (sameGym.length > 0) {
       const r = sameGym[0];
       const valid = r.sets.filter(s => s.weight != null);
-      const weights = valid.map(s => `${s.weight}kg${s.reps != null ? '×' + s.reps + '回' : ''}`).join(' / ');
+      const setsLine = formatSetsLine(r);
+      const bw = isBodyweight(r.exercise);
       const maxW = valid.length ? Math.max(...valid.map(s => s.weight)) : null;
+      const maxReps = r.sets.filter(s => s.reps != null).reduce((m, s) => Math.max(m, s.reps), 0);
+      const totalReps = r.sets.reduce((sum, s) => sum + (s.reps || 0), 0);
       html += `
         <div style="font-weight:700;font-size:15px;">${partBadge}${formatDate(r.date)} @ ${escapeHtml(r.gym)}</div>
-        <div style="margin-top:4px;">${weights || '(重量記録なし)'}</div>
-        ${maxW !== null ? `<div style="margin-top:4px;font-size:12px;color:#7dd3fc;">最大重量: ${maxW}kg</div>` : ''}
+        <div style="margin-top:4px;line-height:1.6;">${setsLine || '(セット記録なし)'}</div>
+        <div style="margin-top:4px;font-size:12px;color:#7dd3fc;">
+          ${bw ? `合計 ${totalReps}回 (${r.sets.length}セット)` : `最大 ${maxW ?? 0}kg ・ 合計 ${totalReps}回`}
+        </div>
       `;
     } else {
       html += `<div style="font-weight:700;">${partBadge}<span style="color:#fbbf24;">${escapeHtml(currentGym || '現在の店舗')}での記録はまだありません</span></div>`;
     }
 
-    // 他店舗の最新を参考表示
+    // 他店舗の最新を参考表示(回数も含めて)
     if (otherGym.length > 0 && sameGym.length === 0) {
-      // 同店舗実績がない場合は、他店舗を全件参考に表示(最大3件)
       const refs = otherGym.slice(0, 3);
       html += `<div style="margin-top:8px;padding-top:6px;border-top:1px dashed rgba(255,255,255,0.25);font-size:12px;color:#cbd5e1;">他店舗での参考:</div>`;
       refs.forEach(r => {
-        const valid = r.sets.filter(s => s.weight != null);
-        const ws = valid.map(s => `${s.weight}kg`).join(' / ');
-        html += `<div style="font-size:12px;color:#cbd5e1;margin-top:2px;">・${formatDate(r.date)} @ ${escapeHtml(r.gym)} ${ws ? '(' + ws + ')' : ''}</div>`;
+        const setsLine = formatSetsLine(r);
+        html += `<div style="font-size:12px;color:#cbd5e1;margin-top:3px;line-height:1.5;">・${formatDate(r.date)} @ ${escapeHtml(r.gym)}<br>　${setsLine}</div>`;
       });
     } else if (otherGym.length > 0) {
       const r = otherGym[0];
-      const valid = r.sets.filter(s => s.weight != null);
-      const ws = valid.map(s => `${s.weight}kg`).join('/');
-      html += `<div style="margin-top:6px;padding-top:6px;border-top:1px dashed rgba(255,255,255,0.25);font-size:11px;color:#94a3b8;">他店舗最新: ${formatDate(r.date)} @ ${escapeHtml(r.gym)}${ws ? ' (' + ws + ')' : ''}</div>`;
+      const setsLine = formatSetsLine(r);
+      html += `<div style="margin-top:6px;padding-top:6px;border-top:1px dashed rgba(255,255,255,0.25);font-size:12px;color:#94a3b8;line-height:1.5;">他店舗最新: ${formatDate(r.date)} @ ${escapeHtml(r.gym)}<br>${setsLine}</div>`;
+    }
+
+    // 自重種目のヒント
+    if (isBodyweight(exercise)) {
+      html += `<div style="margin-top:8px;padding:8px 10px;background:rgba(245,158,11,0.15);border-left:3px solid #f59e0b;border-radius:6px;font-size:12px;color:#fde68a;">⚠ 自重種目: 重量欄は「追加ウェイト」のみ。なければ 0 で入力(例: 自重チンニング → 0kg、ベルト+10kg → 10kg)</div>`;
     }
 
     body.innerHTML = html;
@@ -1612,6 +1939,27 @@
       });
     }
 
+    // 回数入力時のタイマー連動
+    const repsField = div.querySelector('input[data-role="reps"]');
+    if (repsField) {
+      repsField.addEventListener('change', () => {
+        if (!repsField.value) return;
+        // どのセット行か(行インデックス)
+        const rows = [...setList.querySelectorAll('.set-item')];
+        const idx = rows.indexOf(div);
+        if (idx === 0 && !Timer.isVisible()) {
+          // 1セット目: タイマー選択UIを表示(自動開始はしない、ユーザに選ばせる)
+          Timer.reset();
+          document.getElementById('restTimer').classList.add('show');
+          document.getElementById('restTimerDisplay').textContent = '--:--';
+          document.getElementById('restTimerLabel').textContent = '⏱ 休憩時間を選択';
+        } else if (idx > 0 && Timer.getLastDuration() != null) {
+          // 2セット目以降: 直前と同じ分数で自動再開
+          Timer.restart();
+        }
+      });
+    }
+
     div.querySelector('.icon-btn').addEventListener('click', () => {
       div.remove();
       renumberSets();
@@ -1765,6 +2113,7 @@
     $('memo').value = '';
     setList.innerHTML = '';
     addSet(); addSet(); addSet();
+    Timer.hide();
 
     // 本日の記録サマリーを更新
     renderTodaySummary();
@@ -1821,44 +2170,95 @@
       return;
     }
 
-    list.innerHTML = filtered.map(r => {
-      const setsText = r.sets.map(s => {
-        const parts = [];
-        if (s.weight !== null && s.weight !== undefined) parts.push(`${s.weight}kg`);
-        if (s.reps !== null && s.reps !== undefined) parts.push(`${s.reps}回`);
-        return `${s.no}セット目: ${parts.join(' × ')}`;
-      }).join('<br>');
+    // 日付ごとにグループ化
+    const byDate = {};
+    filtered.forEach(r => {
+      if (!byDate[r.date]) byDate[r.date] = [];
+      byDate[r.date].push(r);
+    });
+    // 各日付内では order でソート
+    Object.values(byDate).forEach(group => {
+      group.sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+    });
+    const sortedDates = Object.keys(byDate).sort((a, b) => a < b ? 1 : -1);
 
-      const valid = r.sets.filter(s => s.weight && s.reps);
-      const maxW = valid.length ? Math.max(...valid.map(s => s.weight)) : null;
-      const vol = valid.reduce((a, s) => a + (s.weight * s.reps), 0);
-      const stat = (maxW !== null)
-        ? `<div style="color:#38bdf8;font-size:13px;margin-top:6px;">最大: ${maxW}kg / 総ボリューム: ${vol}kg</div>`
-        : '';
+    list.innerHTML = sortedDates.map(date => {
+      const records = byDate[date];
+      const gyms = [...new Set(records.map(r => r.gym))];
+      const parts = [...new Set(records.map(r => EXERCISE_TO_GROUP[r.exercise] || 'その他'))];
+      const menuNames = records.map(r => r.exercise);
 
-      const part = EXERCISE_TO_GROUP[r.exercise] || '';
-      const partBadge = part ? `<span class="part-badge" data-part="${escapeHtml(part)}">${escapeHtml(part)}</span>` : '';
+      const partBadges = parts.map(p => p ? `<span class="part-badge" data-part="${escapeHtml(p)}">${escapeHtml(p)}</span>` : '').join('');
+      const gymsText = gyms.map(escapeHtml).join(' / ');
+      const menusText = menuNames.map(escapeHtml).join('、');
+
+      const recordsHtml = records.map(r => {
+        const setsText = r.sets.map(s => {
+          const bw = isBodyweight(r.exercise);
+          let prefix;
+          if (bw) {
+            prefix = (s.weight == null || s.weight === 0) ? '自重' : `自重+${s.weight}kg`;
+          } else {
+            prefix = (s.weight != null) ? `${s.weight}kg` : '?kg';
+          }
+          const reps = (s.reps != null) ? `× ${s.reps}回` : '';
+          return `${s.no}. ${prefix} ${reps}`.trim();
+        }).join('<br>');
+
+        const valid = r.sets.filter(s => s.weight != null && s.reps != null);
+        const maxW = valid.length ? Math.max(...valid.map(s => s.weight)) : null;
+        const totalReps = r.sets.reduce((a, s) => a + (s.reps || 0), 0);
+        const bw = isBodyweight(r.exercise);
+        const stat = bw
+          ? `<div style="color:#38bdf8;font-size:13px;margin-top:6px;">合計 ${totalReps}回 (${r.sets.length}セット)</div>`
+          : `<div style="color:#38bdf8;font-size:13px;margin-top:6px;">最大 ${maxW ?? 0}kg ・ 合計 ${totalReps}回</div>`;
+
+        const part = EXERCISE_TO_GROUP[r.exercise] || '';
+        const partBadge = part ? `<span class="part-badge" data-part="${escapeHtml(part)}">${escapeHtml(part)}</span>` : '';
+
+        return `
+          <div class="history-record">
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+              <div class="history-exercise" style="margin:0;">${partBadge}<strong>${escapeHtml(r.exercise)}</strong></div>
+              <div class="history-gym">${escapeHtml(r.gym)}</div>
+            </div>
+            <div class="history-sets">${setsText}</div>
+            ${stat}
+            ${r.memo ? `<div class="history-memo">${escapeHtml(r.memo)}</div>` : ''}
+            <div style="display:flex;gap:14px;align-items:center;margin-top:6px;">
+              <a class="delete-link" data-del="${r.id}">削除</a>
+              <a class="delete-link" data-edit-history="${r.id}" style="color:#f59e0b;">修正</a>
+            </div>
+          </div>
+        `;
+      }).join('');
 
       return `
-        <div class="history-item" data-id="${r.id}">
-          <div class="history-head">
-            <div class="history-date">${formatDate(r.date)}</div>
-            <div class="history-gym">${escapeHtml(r.gym)}</div>
+        <div class="history-day-card" data-date="${date}">
+          <div class="history-day-head">
+            <div class="history-day-row1">
+              <div class="history-day-date">${formatDate(date)}</div>
+              <div class="history-day-arrow">▾</div>
+            </div>
+            <div class="history-day-gyms">📍 ${gymsText}</div>
+            <div class="history-day-parts">${partBadges}</div>
+            <div class="history-day-menus">${records.length}メニュー: ${menusText}</div>
           </div>
-          <div class="history-exercise">${partBadge}<strong>${escapeHtml(r.exercise)}</strong></div>
-          <div class="history-sets">${setsText}</div>
-          ${stat}
-          ${r.memo ? `<div class="history-memo">${escapeHtml(r.memo)}</div>` : ''}
-          <div style="display:flex;gap:14px;align-items:center;">
-            <a class="delete-link" data-del="${r.id}">削除</a>
-            <a class="delete-link" data-edit-history="${r.id}" style="color:#f59e0b;">修正</a>
-          </div>
+          <div class="history-day-records">${recordsHtml}</div>
         </div>
       `;
     }).join('');
 
+    // 日付カードのタップで展開
+    list.querySelectorAll('.history-day-card').forEach(card => {
+      card.querySelector('.history-day-head').addEventListener('click', () => {
+        card.classList.toggle('expanded');
+      });
+    });
+
     list.querySelectorAll('[data-del]').forEach(a => {
-      a.addEventListener('click', () => {
+      a.addEventListener('click', (e) => {
+        e.stopPropagation();
         if (!confirm('この記録を削除しますか?')) return;
         const id = a.getAttribute('data-del');
         const next = loadRecords().filter(r => r.id !== id);
@@ -1869,7 +2269,8 @@
     });
     // 履歴からの修正: 入力タブに切り替えてから編集モードに入る
     list.querySelectorAll('[data-edit-history]').forEach(a => {
-      a.addEventListener('click', () => {
+      a.addEventListener('click', (e) => {
+        e.stopPropagation();
         const id = a.getAttribute('data-edit-history');
         // 入力タブに切り替え
         document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
@@ -1927,6 +2328,8 @@
 
   // ---------- 成長タブ ----------
   const METRIC_LABELS = {
+    totalReps: '合計回数 (回)',
+    avgReps: '平均回数 / セット',
     avg: '平均重量 (kg)',
     max: '最大重量 (kg)',
     volume: '総ボリューム (kg)',
@@ -1934,6 +2337,8 @@
     sets: 'セット数'
   };
   const METRIC_HINTS = {
+    totalReps: 'その日の全セットの回数の合計。自重種目(チンニング・ディップス・腹筋など)の成長を見るのに最適。日々の回数が増えていけば筋持久力・筋力が伸びている指標です。',
+    avgReps: '1セットあたりの平均回数。自重種目で、セット数を変えてもフェアに比較できる指標。重量を変えていない種目の質的な進歩を見るのに向きます。',
     avg: '各セットの「重量×回数」の合計を「総回数」で割った値。レップ数が日によって違っても、その日にどのくらいの強度で挙げられたかを表します。トレンドが右肩上がりなら筋力が伸びている指標。前後と比べて急に落ちている日は疲労が出ている可能性があります。',
     max: 'その日に挙げた最大重量(セット最高値)。挑戦的なセットを行えた日は上がります。最大重量の更新ペースで成長度合いを測れます。',
     volume: '総ボリューム = Σ(重量×回数)。その日のトータルな仕事量。回数を増やしても上がるので、追い込みの量を見るのに向いています。',
@@ -1944,6 +2349,16 @@
   const computeMetric = (record, type) => {
     const sets = record.sets.filter(s => s.weight != null);
     const setsWithReps = sets.filter(s => s.reps != null);
+    const allSetsWithReps = record.sets.filter(s => s.reps != null);
+
+    if (type === 'totalReps') {
+      if (allSetsWithReps.length === 0) return null;
+      return allSetsWithReps.reduce((a, s) => a + s.reps, 0);
+    }
+    if (type === 'avgReps') {
+      if (allSetsWithReps.length === 0) return null;
+      return allSetsWithReps.reduce((a, s) => a + s.reps, 0) / allSetsWithReps.length;
+    }
     if (type === 'avg') {
       const totalReps = setsWithReps.reduce((a, s) => a + s.reps, 0);
       if (totalReps === 0) return null;
@@ -2308,7 +2723,19 @@
     `;
   };
 
-  $('growthExercise').addEventListener('change', drawGrowth);
+  $('growthExercise').addEventListener('change', () => {
+    // 自重種目を選んだ場合、指標を「合計回数」にデフォルト切替(初回のみ)
+    const ex = $('growthExercise').value;
+    const metricSel = $('growthMetric');
+    if (isBodyweight(ex) && (metricSel.value === 'avg' || metricSel.value === 'max' || metricSel.value === 'volume' || metricSel.value === '1rm')) {
+      metricSel.value = 'totalReps';
+      updateMetricHint();
+    } else if (!isBodyweight(ex) && (metricSel.value === 'totalReps' || metricSel.value === 'avgReps')) {
+      metricSel.value = 'avg';
+      updateMetricHint();
+    }
+    drawGrowth();
+  });
   $('growthMetric').addEventListener('change', () => { updateMetricHint(); drawGrowth(); });
   $('growthFrom').addEventListener('change', () => {
     document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('active'));
